@@ -18,6 +18,9 @@ namespace cy
   public:
     TCPConnection();
     ~TCPConnection();
+
+    int write(void* data, size_t len);
+    int read(void* arr, size_t len);
   };
 
   class TCPServer
@@ -43,8 +46,6 @@ namespace cy
 
     cy::Mutex _connectedClientsMutex;
     cy::Mutex _maxConnectedClientsMutex;
-
-    std::vector<TCPConnection**> _active_connections;
 
     inline void initVars()
     {
@@ -93,9 +94,6 @@ namespace cy
     bool isServerRunning();
     bool stopServer();
 
-    void cleanUpActiveConnectionsList();
-    std::vector<TCPConnection**> getActiveConnectionsList();
-    void closeAllConnections();
 
     bool startServer();
 

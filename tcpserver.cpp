@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <thread>
 
 #ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
@@ -18,25 +19,9 @@ static bool WsaInitialized = false;
 #include <netinet/in.h>
 #include <unistd.h>
 #include <errno.h>
-#include <pthread.h>
 
 #endif
 
-namespace thread_helper
-{
-  struct threader
-  {
-    void (*function)(void* data, void* data2);
-    void* data;
-    void* data2;
-  };
-
-  void* threader_func(void* data)
-  {
-    ((threader*) data)->function(((threader*) data)->data, ((threader*) data)->data2);
-    return NULL;
-  }
-}
 
 cy::TCPServer::TCPServer()
 {
@@ -73,6 +58,14 @@ cy::TCPServer::~TCPServer()
   {
     delete ((struct sockaddr_in*) this->_timeoutStruct);
   }
+
+#ifdef _WIN32
+  shutdown(this->_fd, 1);
+  closesocket(this->_fd);
+#else
+  shutdown(this->_fd, SHUT_RDWR);
+  close(this->_fd);
+#endif
 }
 
 bool cy::TCPServer::setMaxConnectedClients(int max)
@@ -235,6 +228,7 @@ void cy::TCPServer::listeningThread()
   listen(this->_fd, this->_connectionQueueSize);
 
 
+
   //Used by accept; IDK why it needs a pointer!
   //Just an int; Use stack; No point in using heap and
   //possible having a memory leak
@@ -316,7 +310,7 @@ void cy::TCPServer::listeningThread()
     }
 
 
-    //Launch the new thread!
+    std::thread(&cy::TCPServer::threadLauncher, this, connection).detach();
   }
 }
 
@@ -324,8 +318,32 @@ void cy::TCPServer::whenPortIsAssigned()
 {
 }
 
-void cy::TCPServer::worker(TCPConnection *connection)
+void cy::TCPServer::threadLauncher(void* connection)
 {
+  try
+  {
+    worker((cy::TCPConnection*) connection);
+    delete (TCPConnection*) connection;
+    connection = NULL;
+  }
+  catch(std::exception& e)
+  {
+    if(connection != NULL)
+      delete (TCPConnection*) connection;
+  }
+}
+
+void cy::TCPServer::worker(TCPConnection* connection)
+{
+  connection->write((void*) "Hello World!\n", 13);
+  char buffer[1024];
+  while(true)
+  {
+    if(connection->read(buffer, 1024) <= 0)
+      break;
+    buffer[1023] = '\0';
+    connection->write(buffer, strlen(buffer));
+  }
 }
 
 //+----------------------------+//
@@ -337,14 +355,4 @@ void cy::TCPServer::worker(TCPConnection *connection)
 bool cy::TCPServer::stopServer()
 {
   return false;
-}
-
-void cy::TCPServer::cleanUpActiveConnectionsList()
-{
-
-}
-
-std::vector<cy::TCPConnection**> getActiveConnectionsList()
-{
-  return std::vector<cy::TCPConnection**>();
 }
