@@ -7,7 +7,8 @@ typedef pthread_mutex_t mutex_t;
 typedef std::mutex mutex_t;
 #endif
 
-cy::Mutex::Mutex()
+cy::Mutex::Mutex() :
+  _locked(false)
 {
   _allocated = ((_mutex = new mutex_t) == NULL) ? false : true;
 #ifdef POSIX
@@ -19,7 +20,8 @@ cy::Mutex::Mutex()
 #endif
 }
 
-cy::Mutex::Mutex(int status)
+cy::Mutex::Mutex(int status) :
+  _locked(false)
 {
   _allocated = ((_mutex = new mutex_t) == NULL) ? false : true;
 #ifdef POSIX
