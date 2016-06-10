@@ -2,7 +2,8 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-cy::TCPConnection::TCPConnection()
+cy::TCPConnection::TCPConnection() :
+  _fd(-1)
 {
   this->_addrinf = NULL;
   this->_tv = NULL;
@@ -13,17 +14,19 @@ cy::TCPConnection::TCPConnection()
 
 cy::TCPConnection::~TCPConnection()
 {
+  if(_fd >= 0)
+  {
 #ifdef _WIN32
-  shutdown(this->_fd, 1);
-  closesocket(this->_fd);
+    shutdown(this->_fd, 1);
+    closesocket(this->_fd);
 #else
-  shutdown(this->_fd, SHUT_RDWR);
-  close(this->_fd);
+    shutdown(this->_fd, SHUT_RDWR);
+    close(this->_fd);
 #endif
+  }
 
   if(this->_addrinf != NULL)
-//    delete this->_addrinf;
-//    delete ((struct sockaddr_in*) this->_addrinf);
+    delete ((struct sockaddr_in*) this->_addrinf);
 
   if(this->_tv != NULL)
     delete ((struct timeval*) this->_tv);
