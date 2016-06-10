@@ -5,6 +5,7 @@ int main()
 {
   cy::TCPServer server;
   server.setPort(2048);
+  server.setTimeout(0, 10);
   server.startServer();
   return 0;
 }
