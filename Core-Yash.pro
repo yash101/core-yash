@@ -15,8 +15,7 @@ SOURCES += main.c \
     mutex.cpp \
     core_yash.cpp
 
-DISTFILES += \
-    Core-Yash.pro.user
+DISTFILES +=
 
 HEADERS += \
     tcpserver.h \
