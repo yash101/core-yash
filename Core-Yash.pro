@@ -9,11 +9,12 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.c \
+SOURCES += \
     tcpserver.cpp \
     tcpconnection.cpp \
     mutex.cpp \
-    core_yash.cpp
+    core_yash.cpp \
+    main.cpp
 
 DISTFILES +=
 
