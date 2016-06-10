@@ -284,6 +284,11 @@ void cy::TCPServer::listeningThread()
     //We failed to accept the connection for whatever reason
     if(connection->_fd < 0)
     {
+      if(errno == EBADF)
+      {
+        delete connection;
+        break;
+      }
       delete connection;
       continue;
     }
@@ -308,6 +313,9 @@ void cy::TCPServer::listeningThread()
       delete connection;
       continue;
     }
+
+
+    connection->server = this;
 
 
     std::thread(&cy::TCPServer::threadLauncher, this, connection).detach();
@@ -335,7 +343,7 @@ void cy::TCPServer::threadLauncher(void* connection)
 
 void cy::TCPServer::worker(TCPConnection* connection)
 {
-  connection->write((void*) "Hello World!\n", 13);
+  connection->write((void*) "Hello World!", 13);
   char buffer[1024];
   while(true)
   {
@@ -354,5 +362,7 @@ void cy::TCPServer::worker(TCPConnection* connection)
 
 bool cy::TCPServer::stopServer()
 {
+  shutdown(this->_fd, SHUT_RDWR);
+  close(this->_fd);
   return false;
 }

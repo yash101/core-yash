@@ -16,6 +16,7 @@ namespace cy
     void* _addrinf;
     void* _tv;
   public:
+    TCPServer* server;
     TCPConnection();
     ~TCPConnection();
 
