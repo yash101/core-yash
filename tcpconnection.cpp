@@ -14,6 +14,7 @@ cy::TCPConnection::TCPConnection() :
 
 cy::TCPConnection::~TCPConnection()
 {
+  //Try to end the socket if there was one in the first place
   if(_fd >= 0)
   {
 #ifdef _WIN32
@@ -25,11 +26,19 @@ cy::TCPConnection::~TCPConnection()
 #endif
   }
 
+  //GC
   if(this->_addrinf != NULL)
     delete ((struct sockaddr_in*) this->_addrinf);
 
+  //...Repeat...
   if(this->_tv != NULL)
     delete ((struct timeval*) this->_tv);
+
+
+  //Update the server object's connected client count
+  this->server->_connectedClientsMutex.lock();
+  this->server->_connectedClients--;
+  this->server->_connectedClientsMutex.unlock();
 }
 
 int cy::TCPConnection::write(void* data, size_t len)
