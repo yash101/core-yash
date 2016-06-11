@@ -6,8 +6,8 @@ int main()
   cy::TCPServer server;
   server.setPort(2048);
   server.setTimeout(250000, 0);
-  server.setTimeout(0, 3);
-  server.setMaxConnectedClients(3);
+  server.setTimeout(0, 0);
+  server.setMaxConnectedClients(0);
   server.startServer();
   return 0;
 }
