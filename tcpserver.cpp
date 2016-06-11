@@ -339,12 +339,16 @@ void cy::TCPServer::listeningThread()
       if(nmc == 0) break;
 
       this->_connectedClientsMutex.lock();
-      this->_connectedClients++;
       nc = this->_connectedClients;
       this->_connectedClientsMutex.unlock();
 
       if(nc <= nmc) break;
     }
+
+    //Increment number of clients currently connected
+    this->_connectedClientsMutex.lock();
+    this->_connectedClients++;
+    this->_connectedClientsMutex.unlock();
 
 
 
