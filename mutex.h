@@ -20,6 +20,24 @@ namespace cy
     void lock();
     void unlock();
   };
+
+  //A simple way to use the stack to make sure we release mutexes!
+  class AutomaticMutex
+  {
+  private:
+    Mutex& _mtx;
+  public:
+    AutomaticMutex(Mutex& mtx) :
+      _mtx(mtx)
+    {
+      _mtx.lock();
+    }
+
+    ~AutomaticMutex()
+    {
+      _mtx.unlock();
+    }
+  };
 }
 
 #endif // MUTEX_H
