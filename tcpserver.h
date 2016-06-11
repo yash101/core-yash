@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <vector>
+#include <sys/types.h>
 
 namespace cy
 {
@@ -15,13 +16,21 @@ namespace cy
     int _fd;
     void* _addrinf;
     void* _tv;
+    ssize_t read_int(void* buffer, size_t buflen, int flags);
   public:
     TCPServer* server;
     TCPConnection();
     ~TCPConnection();
 
-    int write(void* data, size_t len);
-    int read(void* arr, size_t len);
+    ssize_t write(void* dptr, size_t len);
+    ssize_t write(const char* str);
+    ssize_t write(char* str);
+    ssize_t write(char ch);
+
+    ssize_t read(void* buffer, size_t buflen);
+    ssize_t read(char& ch);
+    ssize_t peek(void* buffer, size_t buflen);
+    ssize_t peek(char& ch);
   };
 
   class TCPServer

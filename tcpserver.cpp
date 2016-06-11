@@ -297,6 +297,8 @@ bool cy::TCPServer::startServer()
   return false;
 }
 
+
+//Listens continuously for incoming connections
 void cy::TCPServer::listeningThread()
 {
   //Begin listening (for incoming connections)
