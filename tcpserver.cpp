@@ -379,16 +379,6 @@ void cy::TCPServer::listeningThread()
         continue;
       }
 
-      /*
-       *
-       *     ^
-       *    / \
-       *   / | \   CAUTION: Additional checks need to be implemented. If there is
-       *  /  .  \  some sort of wierd error (in the kernel), this will make the server
-       * /_______\ enter an infinite loop until (this->stop()) is called
-       *
-       */
-
 
       //Something's really messed up! QUIT!
       delete connection;
