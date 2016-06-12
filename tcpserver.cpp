@@ -164,6 +164,7 @@ int cy::TCPServer::getConnectionQueueSize()
 //Set socket timeout, in microseconds
 bool cy::TCPServer::setTimeoutUsec(int usec)
 {
+  cy::AutomaticMutex(this->_timeoutMutex);
   ((struct timeval*) this->_timeoutStruct)->tv_usec = usec;
   return true;
 }
@@ -172,6 +173,7 @@ bool cy::TCPServer::setTimeoutUsec(int usec)
 //Set socket timeout, in seconds
 bool cy::TCPServer::setTimeoutSec(int sec)
 {
+  cy::AutomaticMutex(this->_timeoutMutex);
   ((struct timeval*) this->_timeoutStruct)->tv_sec = sec;
   return true;
 }
@@ -180,6 +182,7 @@ bool cy::TCPServer::setTimeoutSec(int sec)
 //Set socket timeout, in seconds and microseconds
 bool cy::TCPServer::setTimeout(int usec, int sec)
 {
+  cy::AutomaticMutex(this->_timeoutMutex);
   ((struct timeval*) this->_timeoutStruct)->tv_sec = sec;
   ((struct timeval*) this->_timeoutStruct)->tv_usec = usec;
   return true;
@@ -189,6 +192,7 @@ bool cy::TCPServer::setTimeout(int usec, int sec)
 //Retrieve the socket timeout in microseconds
 int cy::TCPServer::getTimeoutUsec()
 {
+  cy::AutomaticMutex(this->_timeoutMutex);
   return ((struct timeval*) this->_timeoutStruct)->tv_usec;
 }
 
@@ -196,6 +200,7 @@ int cy::TCPServer::getTimeoutUsec()
 //Retrieve the socket timeout in seconds
 int cy::TCPServer::getTimeoutSec()
 {
+  cy::AutomaticMutex(this->_timeoutMutex);
   return ((struct timeval*) this->_timeoutStruct)->tv_sec;
 }
 
@@ -389,10 +394,11 @@ void cy::TCPServer::listeningThread()
 
 
 
+    this->_timeoutMutex.lock();
     //Match to the master struct timeval*
     ((struct timeval*) connection->_tv)->tv_sec = ((struct timeval*) this->_timeoutStruct)->tv_sec;
     ((struct timeval*) connection->_tv)->tv_usec = ((struct timeval*) this->_timeoutStruct)->tv_usec;
-
+    this->_timeoutMutex.unlock();
 
 
     //Apply the timeout

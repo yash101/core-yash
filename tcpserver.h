@@ -43,9 +43,6 @@ namespace cy
     void* _timeoutStruct;
     int16_t _port;
 
-    //Mutex for isRunning, timeoutUsec, timeoutSec and connectionQueueSize
-    //****IMPLEMENT****//
-
     bool _isRunning;
     bool _stop;
 
@@ -56,6 +53,7 @@ namespace cy
 
     cy::Mutex _connectedClientsMutex;
     cy::Mutex _maxConnectedClientsMutex;
+    cy::Mutex _timeoutMutex;
 
     inline void initVars()
     {
