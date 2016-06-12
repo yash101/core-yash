@@ -14,12 +14,15 @@ SOURCES += \
     tcpconnection.cpp \
     mutex.cpp \
     core_yash.cpp \
-    main.cpp
+    main.cpp \
+    tcpclient.cpp
 
-DISTFILES +=
+DISTFILES += \
+    README.md
 
 HEADERS += \
     tcpserver.h \
     mutex.h \
     cyexception.h \
-    core_yash.h
+    core_yash.h \
+    tcpclient.h
